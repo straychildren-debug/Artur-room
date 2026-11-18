@@ -1,0 +1,631 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Планировка">
+<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1b2026" media="(prefers-color-scheme: dark)">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Планировка квартиры №33</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap">
+</head>
+<body>
+<style>
+/* Layout: full-screen plan canvas between a slim header and a bottom tool panel (thumb zone) */
+:root{
+  --bg:#eef1f3; --panel:#ffffff; --fg:#1d2329; --muted:#66717c; --line:#d5dbe0;
+  --accent:#0b6e8a; --accent-ink:#ffffff; --sel:#e8590c; --danger:#c92a2a;
+  --wall:#2b3138; --floor:#fbfbf9; --floor-wet:#f3f7f9; --grid:#0b6e8a; --glass:#a9d4e3;
+  --ink:#39424b; --dim:#0b6e8a;
+  --c-bath:#dcecf3; --c-kitchen:#f1e6d4; --c-soft:#e4e1ee; --c-wood:#eadfcf; --c-tech:#e3e7ea;
+  --c-rug:#c9b8d8; --c-plant:#cfe5c8; --c-other:#e8e8e8; --c-door:#fbfbf9; --c-wallf:#2b3138;
+  --font:"Manrope",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12161a; --panel:#1b2026; --fg:#e7ebee; --muted:#93a0ab; --line:#2e363e;
+  --accent:#4cb6d3; --accent-ink:#06222b; --sel:#ff8a3d; --danger:#ff6b6b;
+  --wall:#c4ccd4; --floor:#1f252b; --floor-wet:#1d262d; --grid:#4cb6d3; --glass:#2f6b80;
+  --ink:#cdd5dc; --dim:#6fcbe4;
+  --c-bath:#24404c; --c-kitchen:#4a3f2e; --c-soft:#3a3650; --c-wood:#463c30; --c-tech:#363d44;
+  --c-rug:#4b3d59; --c-plant:#2f4a2c; --c-other:#3a3f44; --c-door:#1f252b; --c-wallf:#c4ccd4;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12161a; --panel:#1b2026; --fg:#e7ebee; --muted:#93a0ab; --line:#2e363e;
+  --accent:#4cb6d3; --accent-ink:#06222b; --sel:#ff8a3d; --danger:#ff6b6b;
+  --wall:#c4ccd4; --floor:#1f252b; --floor-wet:#1d262d; --grid:#4cb6d3; --glass:#2f6b80;
+  --ink:#cdd5dc; --dim:#6fcbe4;
+  --c-bath:#24404c; --c-kitchen:#4a3f2e; --c-soft:#3a3650; --c-wood:#463c30; --c-tech:#363d44;
+  --c-rug:#4b3d59; --c-plant:#2f4a2c; --c-other:#3a3f44; --c-door:#1f252b; --c-wallf:#c4ccd4;
+  color-scheme:dark}
+html{height:100%;box-sizing:border-box}
+*,*::before,*::after{box-sizing:border-box}
+body{height:100%;margin:0;background:var(--bg);color:var(--fg);font-family:var(--font);font-size:15px;
+  overflow:hidden;-webkit-tap-highlight-color:transparent;overscroll-behavior:none}
+button,input,select{font:inherit;color:inherit}
+button{touch-action:manipulation;cursor:pointer}
+#app{height:100%;display:grid;grid-template-rows:auto minmax(0,1fr) auto;grid-template-columns:minmax(0,1fr)}
+#foot .row .btn{min-width:0;padding:0 12px}
+#foot .row .btn.primary{overflow:hidden;text-overflow:ellipsis}
+.band{padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px))}
+header{background:var(--panel);border-bottom:1px solid var(--line);padding-block:8px;display:flex;align-items:center;gap:8px;z-index:3}
+.vbtn{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;background:none;border:0;padding:2px 4px;text-align:left}
+.vbtn b{font-weight:700;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;display:flex;align-items:center;gap:4px}
+.vbtn small{color:var(--muted);font-size:12px}
+.ib{width:42px;height:42px;border-radius:12px;border:1px solid var(--line);background:var(--panel);display:grid;place-items:center;flex:none}
+.ib:disabled{opacity:.35}
+.ib svg,.btn svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.ib:focus-visible,.btn:focus-visible,.chip:focus-visible,.cell:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+main{position:relative;min-height:0}
+#cv{position:absolute;inset:0;width:100%;height:100%;touch-action:none;display:block;user-select:none;-webkit-user-select:none}
+.hint{position:absolute;left:50%;top:10px;transform:translateX(-50%);background:var(--panel);border:1px solid var(--line);
+  color:var(--muted);font-size:12.5px;padding:6px 12px;border-radius:999px;pointer-events:none;white-space:nowrap;max-width:calc(100% - 24px);overflow:hidden;text-overflow:ellipsis}
+.fab{position:absolute;right:max(12px,env(safe-area-inset-right,0px));bottom:12px;display:flex;flex-direction:column;gap:8px}
+footer{background:var(--panel);border-top:1px solid var(--line);padding-block:10px;padding-bottom:max(10px,env(safe-area-inset-bottom,0px));z-index:3}
+.row{display:flex;gap:8px;align-items:center}
+.btn{height:46px;border-radius:12px;border:1px solid var(--line);background:var(--panel);padding:0 14px;display:inline-flex;align-items:center;justify-content:center;gap:7px;font-weight:600;white-space:nowrap}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);flex:1}
+.btn.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.danger{color:var(--danger)}
+.btn.sm{height:40px;padding:0 10px;font-size:14px}
+.tools{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:8px}
+.tools .btn{padding:0;flex-direction:column;gap:2px;height:52px;font-size:11px;font-weight:600}
+.selhead{display:flex;gap:8px;align-items:center}
+.selhead input{flex:1;min-width:0;height:40px;border:1px solid var(--line);border-radius:10px;background:var(--bg);padding:0 10px;font-size:16px;font-weight:600}
+.dims{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.stepper{display:flex;align-items:center;border:1px solid var(--line);border-radius:12px;overflow:hidden;height:46px;background:var(--bg)}
+.stepper span{font-size:12px;color:var(--muted);padding:0 2px 0 9px;font-weight:600}
+.stepper input{width:100%;min-width:0;border:0;background:transparent;text-align:center;font-family:var(--mono);font-size:16px;height:100%}
+.stepper button{width:38px;height:100%;border:0;background:transparent;font-size:20px;color:var(--accent);flex:none}
+.more{margin-top:8px;display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}
+.pad{display:grid;grid-template-columns:repeat(4,40px);gap:6px}
+.pad .btn{width:40px;height:40px;padding:0}
+input[type=number]{-moz-appearance:textfield}
+input::-webkit-outer-spin-button,input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+/* sheets */
+.scrim{position:fixed;inset:0;background:rgba(10,14,18,.38);z-index:20}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:21;background:var(--panel);border-radius:18px 18px 0 0;max-height:78%;display:flex;flex-direction:column;
+  padding-bottom:env(safe-area-inset-bottom,0px);box-shadow:0 -8px 30px rgba(0,0,0,.18)}
+.sheet .grab{width:40px;height:5px;border-radius:9px;background:var(--line);margin:8px auto 2px}
+.sheet .sh{display:flex;align-items:center;justify-content:space-between;padding-block:6px}
+.sheet h2{font-size:18px;margin:0;font-weight:700;text-wrap:balance}
+.sheet .body{overflow:auto;padding-bottom:16px;-webkit-overflow-scrolling:touch}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-block:6px 10px;scrollbar-width:none}
+.chip{flex:none;height:36px;border-radius:999px;border:1px solid var(--line);background:var(--bg);padding:0 14px;font-weight:600;font-size:14px}
+.chip.on{background:var(--fg);color:var(--panel);border-color:var(--fg)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px}
+.cell{border:1px solid var(--line);background:var(--bg);border-radius:14px;padding:8px 6px 7px;display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;min-width:0}
+.cell svg{width:100%;height:64px}
+.cell b{font-size:12.5px;font-weight:600;line-height:1.2}
+.cell small{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.sect{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:16px 0 8px}
+.list{display:flex;flex-direction:column;gap:6px}
+.vitem{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--bg);text-align:left;width:100%}
+.vitem.on{border-color:var(--accent);box-shadow:inset 0 0 0 1px var(--accent)}
+.vitem span{flex:1;min-width:0;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vitem small{color:var(--muted);font-size:12px}
+.wrapbtns{display:flex;flex-wrap:wrap;gap:8px}
+.tog{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 2px;border-bottom:1px solid var(--line)}
+.tog:last-child{border-bottom:0}
+.sw{position:relative;width:48px;height:28px;flex:none}
+.sw input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+.sw i{position:absolute;inset:0;border-radius:99px;background:var(--line);transition:background .15s}
+.sw i::after{content:"";position:absolute;width:22px;height:22px;left:3px;top:3px;border-radius:50%;background:var(--panel);box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .15s}
+.sw input:checked+i{background:var(--accent)}
+.sw input:checked+i::after{transform:translateX(20px)}
+.sw input:focus-visible+i{outline:2px solid var(--accent);outline-offset:2px}
+.seg{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg button{border:0;background:transparent;padding:7px 12px;font-weight:600;font-size:14px}
+.seg button.on{background:var(--accent);color:var(--accent-ink)}
+.note{color:var(--muted);font-size:13.5px;line-height:1.55;max-width:65ch}
+.confirm{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px;padding:10px;border-radius:12px;background:var(--bg);border:1px solid var(--line)}
+.toast{position:fixed;left:50%;bottom:calc(140px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--fg);color:var(--panel);
+  padding:9px 16px;border-radius:999px;font-size:14px;font-weight:600;z-index:40;pointer-events:none;max-width:calc(100% - 32px);text-align:center}
+@media (prefers-reduced-motion:no-preference){.sheet{animation:up .2s ease-out}@keyframes up{from{transform:translateY(30px);opacity:.4}}}
+@media (min-width:720px){.sheet{left:50%;right:auto;width:640px;transform:translateX(-50%)}
+  @media (prefers-reduced-motion:no-preference){.sheet{animation:none}}}
+</style>
+
+<div id="app">
+  <header class="band">
+    <button class="vbtn" id="vbtn" aria-label="Варианты и настройки">
+      <b><span id="vname">Вариант</span><svg width="14" height="14" viewBox="0 0 24 24" style="stroke:currentColor;fill:none;stroke-width:2.4;flex:none"><path d="m6 9 6 6 6-6"/></svg></b>
+      <small id="status">Кв. №33 · 6 этаж</small>
+    </button>
+    <button class="ib" id="undo" aria-label="Отменить"><svg viewBox="0 0 24 24"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg></button>
+    <button class="ib" id="redo" aria-label="Повторить"><svg viewBox="0 0 24 24"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></svg></button>
+    <button class="ib" id="menu" aria-label="Меню"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+  </header>
+  <main>
+    <svg id="cv" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <clipPath id="roomsClip"></clipPath>
+        <pattern id="tile" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="var(--grid)" stroke-opacity=".10" stroke-width=".8"/></pattern>
+      </defs>
+      <g id="world">
+        <g id="Lstatic"></g>
+        <g id="Lgrid"></g>
+        <g id="Llabels"></g>
+        <g id="Ldims"></g>
+        <g id="Litems"></g>
+        <g id="Lover"></g>
+      </g>
+    </svg>
+    <div class="hint" id="hint">Нажми на предмет, чтобы выбрать и двигать</div>
+    <div class="fab">
+      <button class="ib" id="zin" aria-label="Приблизить"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+      <button class="ib" id="zout" aria-label="Отдалить"><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg></button>
+    </div>
+  </main>
+  <footer class="band" id="foot"></footer>
+</div>
+<div id="layer"></div>
+
+<script>
+/* ============ Геометрия квартиры (с плана БТИ) ============
+   Исходные размеры в метрах в системе фото (u — вправо, v — вниз),
+   на экране план повёрнут: лоджия сверху, вход снизу. Мировые единицы — сантиметры. */
+const P=(u,v)=>[Math.round((v+0.40)*100),Math.round((1.85-u)*100)];
+const poly=a=>a.map(([u,v])=>P(u,v));
+const OUT=poly([[-9.32,-0.40],[0.50,-0.40],[0.50,-0.10],[1.85,-0.10],[1.85,6.96],[0.50,6.96],[0.50,6.56],[-6.55,6.56],[-6.55,4.68],[-9.32,4.68]]);
+const ROOMS=[
+  {id:'r3',name:'Комната',area:'17,4 м²',pts:poly([[-5.29,0],[0,0],[0,3.09],[-5.95,3.09],[-5.95,1.30],[-5.29,1.30]]),lab:[195,455]},
+  {id:'r4',name:'Комната',area:'19,8 м²',pts:poly([[-5.32,3.21],[0,3.21],[0,6.36],[-6.35,6.36],[-6.35,3.33],[-5.32,3.33]]),lab:[518,640]},
+  {id:'r2',name:'Санузел',area:'4,4 м²',pts:poly([[-8.50,0],[-6.05,0],[-6.05,1.80],[-8.50,1.80]]),lab:[130,912],wet:1},
+  {id:'r1',name:'Прихожая',area:'6,8 м²',pts:poly([[-9.02,1.95],[-6.05,1.95],[-6.05,3.09],[-6.51,3.09],[-6.51,4.48],[-9.02,4.48]]),lab:[330,890]},
+  {id:'r5',name:'Лоджия',area:'≈8,5 м²',pts:poly([[0.5,0.10],[1.77,0.10],[1.77,6.76],[0.5,6.76]]),lab:[383,72]},
+];
+const WINDOWS=[[135,135,163,50],[456,135,146,50],[50,0,666,8]]; // x,y,w,h
+const BOUNDS={x:-20,y:-20,w:756,h:1230};
+const EDGES=[];ROOMS.forEach(r=>r.pts.forEach((p,i)=>{const q=r.pts[(i+1)%r.pts.length];EDGES.push([p[0],p[1],q[0],q[1]])}));
+
+/* ============ Каталог мебели ============ [тип рисунка, название, ширина, глубина, цвет, слой] */
+const CAT=[
+ {cat:'Санузел',items:[['bathtub','Ванна 170',170,75,'bath'],['bathtub','Ванна 150',150,70,'bath'],['shower','Душевой поддон 90',90,90,'bath'],['shower','Душ 120×80',120,80,'bath'],
+  ['sink','Раковина',60,45,'bath'],['vanity','Тумба с раковиной',80,46,'bath'],['toilet','Унитаз',38,65,'bath'],['toilet','Унитаз подвесной',36,54,'bath'],['install','Инсталляция',60,20,'tech'],
+  ['washer','Стиральная машина',60,55,'tech'],['boiler','Бойлер',45,45,'tech'],['towel','Полотенцесушитель',50,12,'tech'],['bookcase','Шкафчик',40,30,'wood']]},
+ {cat:'Кухня',items:[['base','Модуль 60',60,60,'kitchen'],['base','Модуль 40',40,60,'kitchen'],['base','Модуль 80',80,60,'kitchen'],['ksink','Мойка',80,60,'kitchen'],
+  ['hob','Плита',60,60,'tech'],['fridge','Холодильник',60,65,'tech'],['fridge','Холодильник Side-by-Side',90,70,'tech'],['dish','Посудомойка 45',45,60,'tech'],['dish','Посудомойка 60',60,60,'tech'],
+  ['column','Пенал / духовка',60,60,'kitchen'],['corner','Угловой модуль',100,100,'kitchen'],['upper','Навесной шкаф',60,35,'kitchen',2],['hood','Вытяжка',60,50,'tech',2],
+  ['table','Остров',120,80,'kitchen'],['table','Барная стойка',150,45,'wood']]},
+ {cat:'Гостиная',items:[['sofa','Диван 3-местный',220,95,'soft'],['sofa','Диван 2-местный',170,90,'soft'],['csofa','Угловой диван',270,170,'soft'],['armchair','Кресло',85,85,'soft'],
+  ['table','Журнальный стол',100,60,'wood'],['round','Столик круглый',60,60,'wood'],['tvstand','ТВ-тумба',180,40,'wood'],['tv','Телевизор',145,8,'tech'],
+  ['bookcase','Стеллаж',80,35,'wood'],['rug','Ковёр',200,140,'rug',0],['plant','Растение',45,45,'plant']]},
+ {cat:'Спальня',items:[['bed','Кровать 160×200',160,200,'soft'],['bed','Кровать 180×200',180,200,'soft'],['bed','Кровать 140×200',140,200,'soft'],['bed','Кровать 90×200',90,200,'soft'],
+  ['crib','Детская кроватка',65,125,'wood'],['night','Тумба прикроватная',45,40,'wood'],['wardrobe','Шкаф 180',180,60,'wood'],['wardrobe','Шкаф 120',120,60,'wood'],
+  ['dresser','Комод',120,50,'wood'],['dresser','Туалетный столик',100,45,'wood']]},
+ {cat:'Столы и стулья',items:[['table','Стол 120×80',120,80,'wood'],['table','Стол 160×90',160,90,'wood'],['round','Стол круглый Ø100',100,100,'wood'],['chair','Стул',45,50,'wood'],
+  ['desk','Письменный стол',120,60,'wood'],['ochair','Офисное кресло',60,60,'soft']]},
+ {cat:'Прихожая',items:[['wardrobe','Шкаф-купе 150',150,60,'wood'],['shoe','Обувница',80,30,'wood'],['bench','Банкетка',90,40,'soft'],['hanger','Вешалка',90,30,'wood']]},
+ {cat:'Двери и прочее',items:[['door','Дверь 70',70,70,'door',0.5],['door','Дверь 80',80,80,'door',0.5],['door','Дверь 90',90,90,'door',0.5],['wall','Перегородка',100,10,'wallf'],
+  ['radiator','Радиатор',100,10,'tech'],['rect','Прямоугольник',100,60,'other'],['circle','Круг',60,60,'other']]},
+];
+
+/* ============ Рисунки предметов (вид сверху, спинка = верхний край) ============ */
+const f=n=>Math.round(n*10)/10;
+const R=(x,y,w,h,rx,c)=>`<rect x="${f(x)}" y="${f(y)}" width="${f(Math.max(w,0.5))}" height="${f(Math.max(h,0.5))}" rx="${f(rx||0)}" class="${c}"/>`;
+const C=(x,y,r,c)=>`<circle cx="${f(x)}" cy="${f(y)}" r="${f(Math.max(r,0.5))}" class="${c}"/>`;
+const E=(x,y,rx,ry,c)=>`<ellipse cx="${f(x)}" cy="${f(y)}" rx="${f(Math.max(rx,0.5))}" ry="${f(Math.max(ry,0.5))}" class="${c}"/>`;
+const L=(x1,y1,x2,y2,c)=>`<line x1="${f(x1)}" y1="${f(y1)}" x2="${f(x2)}" y2="${f(y2)}" class="${c||'l'}"/>`;
+const PA=(d,c)=>`<path d="${d}" class="${c}"/>`;
+const DRAW={
+ rect:(w,d)=>R(-w/2,-d/2,w,d,2,'b'),
+ circle:(w,d)=>E(0,0,w/2,d/2,'b'),
+ bathtub:(w,d)=>R(-w/2,-d/2,w,d,8,'b')+R(-w/2+7,-d/2+7,w-14,d-14,Math.min(w,d)/2.6,'l')+C(w/2-20,0,3,'l'),
+ shower:(w,d)=>R(-w/2,-d/2,w,d,4,'b')+L(-w/2+5,-d/2+5,w/2-5,d/2-5,'lt')+L(w/2-5,-d/2+5,-w/2+5,d/2-5,'lt')+C(0,0,4,'l'),
+ sink:(w,d)=>R(-w/2,-d/2,w,d,5,'b')+E(0,3,w*.36,d*.32,'l')+C(0,-d/2+6,2.5,'l'),
+ vanity:(w,d)=>R(-w/2,-d/2,w,d,3,'b')+E(0,2,w*.3,d*.3,'l')+C(0,-d/2+6,2.5,'l'),
+ toilet:(w,d)=>{const t=Math.min(18,d*.3);return R(-w/2,-d/2,w,t,3,'b')+E(0,-d/2+t+(d-t)/2,w/2-1,(d-t)/2,'b')+E(0,-d/2+t+(d-t)/2+2,w/2-7,(d-t)/2-7,'l')},
+ install:(w,d)=>R(-w/2,-d/2,w,d,1,'b')+L(-w/2,-d/2,w/2,d/2,'lt')+L(w/2,-d/2,-w/2,d/2,'lt'),
+ washer:(w,d)=>R(-w/2,-d/2,w,d,4,'b')+C(0,2,Math.min(w,d)*.32,'l')+C(0,2,Math.min(w,d)*.2,'lt')+L(-w/2,-d/2+8,w/2,-d/2+8,'lt'),
+ boiler:(w,d)=>E(0,0,w/2,d/2,'b')+E(0,0,w*.3,d*.3,'l'),
+ towel:(w,d)=>R(-w/2,-d/2,w,d,3,'b')+[.25,.5,.75].map(k=>L(-w/2+w*k,-d/2,-w/2+w*k,d/2,'lt')).join(''),
+ base:(w,d)=>R(-w/2,-d/2,w,d,1,'b')+L(-w/2,d/2-5,w/2,d/2-5,'lt'),
+ ksink:(w,d)=>R(-w/2,-d/2,w,d,1,'b')+R(-w*.32,-d*.3,w*.64,d*.55,6,'l')+C(0,-d/2+7,2.5,'l'),
+ hob:(w,d)=>R(-w/2,-d/2,w,d,2,'b')+[[-1,-1],[1,-1],[-1,1],[1,1]].map(([a,b])=>C(a*w/4.4,b*d/4.4,Math.min(w,d)*.15,'l')).join(''),
+ fridge:(w,d)=>R(-w/2,-d/2,w,d,2,'b')+R(-w/2+4,-d/2+4,w-8,d-12,1,'lt')+L(-w/2,d/2-5,w/2,d/2-5,'l'),
+ dish:(w,d)=>R(-w/2,-d/2,w,d,1,'b')+L(-w/2,-d/2,w/2,d/2,'lt')+L(w/2,-d/2,-w/2,d/2,'lt'),
+ column:(w,d)=>R(-w/2,-d/2,w,d,1,'b')+R(-w/2+5,-d/2+5,w-10,d-10,1,'lt')+L(-w/2,d/2-5,w/2,d/2-5,'lt'),
+ corner:(w,d)=>PA(`M${-w/2} ${-d/2}H${w/2}V${-d/2+60}H${-w/2+60}V${d/2}H${-w/2}Z`,'b')+L(-w/2+60,-d/2+60,-w/2,-d/2,'lt'),
+ upper:(w,d)=>R(-w/2,-d/2,w,d,1,'bd')+L(-w/2,-d/2,w/2,d/2,'dl'),
+ hood:(w,d)=>R(-w/2,-d/2,w,d,2,'bd')+R(-w*.25,-d*.25,w*.5,d*.5,1,'dl'),
+ table:(w,d)=>R(-w/2,-d/2,w,d,3,'b'),
+ round:(w,d)=>E(0,0,w/2,d/2,'b'),
+ desk:(w,d)=>R(-w/2,-d/2,w,d,2,'b')+R(w/2-45,-d/2+4,40,d-8,1,'lt'),
+ chair:(w,d)=>R(-w/2,-d/2+8,w,d-8,5,'b')+R(-w/2,-d/2,w,9,3,'b2'),
+ ochair:(w,d)=>E(0,3,w*.4,d*.38,'b')+PA(`M${-w*.4} ${-d*.25}Q0 ${-d*.62} ${w*.4} ${-d*.25}`,'thick'),
+ sofa:(w,d)=>{const a=Math.min(20,w*.12),n=w>200?3:w>130?2:1;let s=R(-w/2,-d/2,w,d,8,'b')+R(-w/2+a,-d/2,w-2*a,22,5,'b2')+R(-w/2,-d/2,a,d,7,'b2')+R(w/2-a,-d/2,a,d,7,'b2');
+   for(let i=1;i<n;i++){const x=-w/2+a+(w-2*a)*i/n;s+=L(x,-d/2+22,x,d/2-4,'lt')}return s},
+ armchair:(w,d)=>{const a=Math.min(18,w*.2);return R(-w/2,-d/2,w,d,10,'b')+R(-w/2+a,-d/2,w-2*a,20,5,'b2')+R(-w/2,-d/2,a,d,8,'b2')+R(w/2-a,-d/2,a,d,8,'b2')},
+ csofa:(w,d)=>{const k=95;return PA(`M${-w/2} ${-d/2}H${w/2}V${-d/2+k}H${-w/2+k}V${d/2}H${-w/2}Z`,'b')+PA(`M${-w/2} ${-d/2}H${w/2}V${-d/2+22}H${-w/2+22}V${d/2}H${-w/2}Z`,'b2')+L(-w/2+k,-d/2+k,w/2,-d/2+k,'l')+L(-w/2+k+(w-k)/2,-d/2+22,-w/2+k+(w-k)/2,-d/2+k,'lt')},
+ bed:(w,d)=>{const n=w>=120?2:1,pw=(w-14-(n-1)*6)/n;let s=R(-w/2,-d/2,w,d,4,'b')+R(-w/2,-d/2,w,9,3,'b2');
+   for(let i=0;i<n;i++)s+=R(-w/2+7+i*(pw+6),-d/2+14,pw,32,8,'l');
+   s+=PA(`M${-w/2} ${-d/2+60}H${w/2}V${d/2-3}Q${w/2} ${d/2} ${w/2-3} ${d/2}H${-w/2+3}Q${-w/2} ${d/2} ${-w/2} ${d/2-3}Z`,'b2');return s},
+ crib:(w,d)=>R(-w/2,-d/2,w,d,3,'b')+R(-w/2+5,-d/2+5,w-10,d-10,2,'lt'),
+ night:(w,d)=>R(-w/2,-d/2,w,d,3,'b')+C(0,0,Math.min(w,d)*.18,'lt'),
+ wardrobe:(w,d)=>{let s=R(-w/2,-d/2,w,d,1,'b')+L(-w/2+4,0,w/2-4,0,'dl');const n=Math.max(1,Math.round(w/55));for(let i=1;i<n;i++){const x=-w/2+w*i/n;s+=L(x,d/2-6,x,d/2,'l')}return s+L(-w/2,d/2-6,w/2,d/2-6,'lt')},
+ dresser:(w,d)=>R(-w/2,-d/2,w,d,2,'b')+L(-w/2,d/2-5,w/2,d/2-5,'lt'),
+ tvstand:(w,d)=>{let s=R(-w/2,-d/2,w,d,2,'b');for(let i=1;i<3;i++){const x=-w/2+w*i/3;s+=L(x,-d/2,x,d/2,'lt')}return s},
+ tv:(w,d)=>R(-w/2,-d/2,w,d,1,'ink'),
+ bookcase:(w,d)=>{let s=R(-w/2,-d/2,w,d,1,'b');const n=Math.max(1,Math.round(w/40));for(let i=1;i<n;i++){const x=-w/2+w*i/n;s+=L(x,-d/2,x,d/2,'lt')}return s},
+ shoe:(w,d)=>R(-w/2,-d/2,w,d,2,'b')+L(-w/2,0,w/2,0,'lt'),
+ bench:(w,d)=>R(-w/2,-d/2,w,d,8,'b'),
+ hanger:(w,d)=>R(-w/2,-d/2,w,d,2,'bd')+L(-w/2+6,0,w/2-6,0,'thick'),
+ rug:(w,d)=>R(-w/2,-d/2,w,d,4,'rug')+R(-w/2+8,-d/2+8,w-16,d-16,2,'dl'),
+ plant:(w,d)=>{let s=E(0,0,w/2,d/2,'b');for(let i=0;i<6;i++){const a=i*Math.PI/3;s+=E(Math.cos(a)*w*.22,Math.sin(a)*d*.22,w*.14,d*.14,'leaf')}return s+C(0,0,Math.min(w,d)*.08,'l')},
+ wall:(w,d)=>R(-w/2,-d/2,w,d,0,'wallf'),
+ radiator:(w,d)=>{let s=R(-w/2,-d/2,w,d,1,'b');const n=Math.max(2,Math.round(w/8));for(let i=1;i<n;i++){const x=-w/2+w*i/n;s+=L(x,-d/2,x,d/2,'lt')}return s},
+ door:(w,d)=>R(-w/2-2,d/2-1,w+4,32,0,'cut')+PA(`M${w/2} ${d/2}A${w} ${d} 0 0 0 ${-w/2} ${-d/2}`,'arc')+L(-w/2,d/2,-w/2,-d/2,'thick')+L(-w/2,d/2,w/2,d/2,'jamb'),
+};
+const SVG_CSS=`
+.b{fill:var(--fill);stroke:var(--ink);stroke-width:1.2px;vector-effect:non-scaling-stroke}
+.b2{fill:var(--ink);fill-opacity:.13;stroke:var(--ink);stroke-width:1px;vector-effect:non-scaling-stroke}
+.bd{fill:var(--fill);fill-opacity:.55;stroke:var(--ink);stroke-width:1.2px;stroke-dasharray:5 3;vector-effect:non-scaling-stroke}
+.l{fill:none;stroke:var(--ink);stroke-width:1px;vector-effect:non-scaling-stroke}
+.lt{fill:none;stroke:var(--ink);stroke-opacity:.5;stroke-width:.8px;vector-effect:non-scaling-stroke}
+.dl{fill:none;stroke:var(--ink);stroke-opacity:.55;stroke-width:.8px;stroke-dasharray:4 3;vector-effect:non-scaling-stroke}
+.thick{fill:none;stroke:var(--ink);stroke-width:2.6px;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.arc{fill:var(--ink);fill-opacity:.05;stroke:var(--ink);stroke-width:.9px;stroke-dasharray:4 3;vector-effect:non-scaling-stroke}
+.jamb{stroke:none}
+.cut{fill:var(--floor);stroke:none}
+.ink{fill:var(--ink);stroke:none}
+.rug{fill:var(--fill);fill-opacity:.55;stroke:var(--ink);stroke-opacity:.4;stroke-width:1px;vector-effect:non-scaling-stroke}
+.leaf{fill:var(--ink);fill-opacity:.18;stroke:none}
+.wallf{fill:var(--wall);stroke:none}
+.wallp{fill:var(--wall);stroke:none}
+.floor{fill:var(--floor);stroke:none}
+.floor.wet{fill:url(#tile)}
+.floorbg{fill:var(--floor-wet)}
+.glass{fill:var(--glass);stroke:var(--wall);stroke-width:1px;vector-effect:non-scaling-stroke}
+.gl{stroke:var(--grid);stroke-opacity:.09;stroke-width:1px;vector-effect:non-scaling-stroke}
+.gl.m{stroke-opacity:.2}
+.rl{font-family:var(--font);font-size:calc(var(--fs) * 1.08);font-weight:700;fill:var(--ink);fill-opacity:.42;text-anchor:middle}
+.rl2{font-family:var(--mono);font-size:calc(var(--fs) * .95);fill:var(--ink);fill-opacity:.42;text-anchor:middle}
+.wd{font-family:var(--mono);font-size:calc(var(--fs) * .85);fill:var(--dim);text-anchor:middle;dominant-baseline:middle;paint-order:stroke;stroke:var(--floor);stroke-width:3px}
+.il{font-family:var(--font);font-size:calc(var(--fs) * .82);font-weight:600;fill:var(--ink);text-anchor:middle;dominant-baseline:middle;paint-order:stroke;stroke:var(--floor);stroke-width:2.5px;stroke-opacity:.85;pointer-events:none}
+`;
+document.head.insertAdjacentHTML('beforeend','<style>'+SVG_CSS+`
+.it{cursor:grab}
+.hit{fill:transparent;stroke:none}
+.selbox{fill:none;stroke:var(--sel);stroke-width:2px;stroke-dasharray:6 4;vector-effect:non-scaling-stroke}
+.dline{stroke:var(--sel);stroke-width:1.4px;vector-effect:non-scaling-stroke}
+.dtxt{font-family:var(--mono);font-size:var(--fs);font-weight:500;fill:var(--sel);text-anchor:middle;dominant-baseline:middle;paint-order:stroke;stroke:var(--floor);stroke-width:4px}
+.ruler{stroke:var(--accent);stroke-width:2px;vector-effect:non-scaling-stroke}
+.rtxt{font-family:var(--mono);font-size:calc(var(--fs) * 1.15);font-weight:500;fill:var(--accent);text-anchor:middle;dominant-baseline:middle;paint-order:stroke;stroke:var(--floor);stroke-width:4px}
+</style>`);
+
+const CATCOLOR={bath:'--c-bath',kitchen:'--c-kitchen',soft:'--c-soft',wood:'--c-wood',tech:'--c-tech',rug:'--c-rug',plant:'--c-plant',other:'--c-other',door:'--c-door',wallf:'--c-wallf'};
+
+/* ============ Состояние ============ */
+const uid=()=>'i'+Math.random().toString(36).slice(2,9);
+const mk=(t,n,w,d,c,z,x,y,rot=0,fl=0)=>({id:uid(),t,n,w,d,c,z:z??1,x,y,rot,fl});
+const DOORS=()=>[mk('door','Входная дверь',90,90,'door',0.5,360,1162,180),mk('door','Дверь в санузел',70,70,'door',0.5,270,935,90),
+  mk('door','Дверь в комнату',80,80,'door',0.5,300,740,0),mk('door','Дверь в комнату',80,80,'door',0.5,430,780,0)];
+const SAMPLE=()=>[...DOORS(),
+  mk('bathtub','Ванна 170',170,75,'bath',1,77.5,875,270),mk('toilet','Унитаз',38,65,'bath',1,72.5,1000,270),mk('sink','Раковина',60,45,'bath',1,170,1012.5,180),
+  mk('washer','Стиральная машина',60,55,'tech',1,160,817.5,0),
+  mk('fridge','Холодильник',60,65,'tech',1,72.5,680,270),mk('ksink','Мойка',80,60,'kitchen',1,70,610,270),mk('dish','Посудомойка 45',45,60,'tech',1,70,547.5,270),
+  mk('base','Модуль 60',60,60,'kitchen',1,70,495,270),mk('hob','Плита',60,60,'tech',1,70,435,270),mk('base','Модуль 60',60,60,'kitchen',1,70,375,270),
+  mk('table','Стол 120×80',120,80,'wood',1,250,330,90),mk('chair','Стул',45,50,'wood',1,190,300,270),mk('chair','Стул',45,50,'wood',1,190,360,270),
+  mk('chair','Стул',45,50,'wood',1,310,300,90),mk('chair','Стул',45,50,'wood',1,310,360,90),mk('sofa','Диван 3-местный',220,95,'soft',1,301.5,560,90),
+  mk('bed','Кровать 160×200',160,200,'soft',1,576,450,90),mk('night','Тумба прикроватная',45,40,'wood',1,656,347.5,90),mk('night','Тумба прикроватная',45,40,'wood',1,656,552.5,90),
+  mk('wardrobe','Шкаф 180',180,60,'wood',1,580,790,180),mk('desk','Письменный стол',120,60,'wood',1,450,215,0),mk('ochair','Офисное кресло',60,60,'soft',1,450,272,180),
+  mk('wardrobe','Шкаф-купе 150',150,60,'wood',1,458,931,90),mk('shoe','Обувница',80,30,'wood',1,250,1040,270),
+  mk('plant','Растение',45,45,'plant',1,90,72),mk('armchair','Кресло',85,85,'soft',1,640,72,0)];
+const defaultState=()=>{const a={id:uid(),name:'Пример расстановки',items:SAMPLE()};return{variants:[a],current:a.id,settings:{dims:true,grid:true,labels:true,magnet:true,step:1},updatedAt:0}};
+let S;
+const LS='kv33-plan-v1';
+const inClaude=()=>!!(window.claude&&window.claude.use);
+try{const raw=localStorage.getItem(LS);if(raw){const o=JSON.parse(raw);if(o&&o.variants&&o.variants.length)S=o}}catch(e){}
+if(!S)S=defaultState();
+S.settings=Object.assign({dims:true,grid:true,labels:true,magnet:true,step:1},S.settings||{});
+const V=()=>S.variants.find(v=>v.id===S.current)||S.variants[0];
+let sel=null, hist=[], redo=[], view={tx:0,ty:0,s:1}, ruler=null, rulerMode=false, moreOpen=false;
+
+/* ============ Сохранение (облако артефакта + копия на устройстве) ============ */
+let db=null, saveTimer=null, saving=false, dirty=false, cloudOK=false;
+const statusEl=document.getElementById('status');
+function setStatus(t){statusEl.textContent=t}
+function persistLocal(){try{localStorage.setItem(LS,JSON.stringify(S))}catch(e){}}
+function changed(){S.updatedAt=Date.now();persistLocal();dirty=true;clearTimeout(saveTimer);
+  if(db){setStatus('Сохраняю…');saveTimer=setTimeout(flush,900)}else setStatus(inClaude()?'Сохранено на этом устройстве':'Сохранено в этом браузере')}
+async function flush(){if(!db||saving||!dirty)return;saving=true;dirty=false;
+  try{await db.doc('plans/main').set(JSON.parse(JSON.stringify(S)));setStatus('Сохранено');cloudOK=true}
+  catch(e){setStatus(e&&e.code==='quota_exceeded'?'Нет места для сохранения':'Не сохранилось в облако, копия на устройстве');dirty=true}
+  saving=false;if(dirty){clearTimeout(saveTimer);saveTimer=setTimeout(flush,1500)}}
+(async()=>{
+  try{db=window.claude&&window.claude.use?await window.claude.use('db'):null}catch(e){db=null}
+  if(!db){setStatus(inClaude()?'Сохранено на этом устройстве':'Сохранено в этом браузере');return}
+  setStatus('Загружаю…');
+  let done=false;const tm=setTimeout(()=>{if(!done)setStatus('Облако не отвечает, работаю на устройстве')},10000);
+  try{const snap=await db.doc('plans/main').get();done=true;clearTimeout(tm);
+    const o=snap.exists?snap.data():null;
+    if(o&&o.variants&&o.variants.length&&(o.updatedAt||0)>=(S.updatedAt||0)){
+      S=JSON.parse(JSON.stringify(o));S.settings=Object.assign({dims:true,grid:true,labels:true,magnet:true,step:1},S.settings||{});
+      persistLocal();sel=null;hist=[];redo=[];renderAll();setStatus('Сохранено')}
+    else if(S.updatedAt){dirty=true;flush()}else setStatus('Сохранено');
+  }catch(e){done=true;clearTimeout(tm);setStatus('Облако недоступно, копия на устройстве')}
+})();
+
+/* ============ История ============ */
+function snap(){return JSON.stringify(V().items)}
+function pushHist(before){hist.push(before??snap());if(hist.length>120)hist.shift();redo=[];updUndo()}
+function updUndo(){document.getElementById('undo').disabled=!hist.length;document.getElementById('redo').disabled=!redo.length}
+function undo(){if(!hist.length)return;redo.push(snap());V().items=JSON.parse(hist.pop());if(sel&&!getItem(sel))sel=null;changed();renderItems();renderFoot();updUndo()}
+function redoF(){if(!redo.length)return;hist.push(snap());V().items=JSON.parse(redo.pop());if(sel&&!getItem(sel))sel=null;changed();renderItems();renderFoot();updUndo()}
+const getItem=id=>V().items.find(i=>i.id===id);
+
+/* ============ Рендер ============ */
+const $=id=>document.getElementById(id);
+const svg=$('cv'),world=$('world');
+function pts(a){return a.map(p=>p.join(',')).join(' ')}
+function inPoly(x,y,p){let c=false;for(let i=0,j=p.length-1;i<p.length;j=i++){const[xi,yi]=p[i],[xj,yj]=p[j];if((yi>y)!==(yj>y)&&x<(xj-xi)*(y-yi)/(yj-yi)+xi)c=!c}return c}
+function staticSVG(){
+  let s=`<polygon points="${pts(OUT)}" class="wallp"/>`;
+  ROOMS.forEach(r=>{s+=`<polygon points="${pts(r.pts)}" class="floor"/>`;if(r.wet)s+=`<polygon points="${pts(r.pts)}" class="floor wet"/>`});
+  WINDOWS.forEach(([x,y,w,h])=>{s+=`<rect x="${x}" y="${y}" width="${w}" height="${h}" class="glass"/>`;
+    if(h>w)s+=`<line x1="${x+w/2}" y1="${y}" x2="${x+w/2}" y2="${y+h}" class="l"/>`;else s+=`<line x1="${x}" y1="${y+h/2}" x2="${x+w}" y2="${y+h/2}" class="l"/>`});
+  return s}
+function gridSVG(){if(!S.settings.grid)return'';let s='<g clip-path="url(#roomsClip)">';
+  for(let x=0;x<=BOUNDS.w;x+=50)s+=`<line x1="${x}" y1="0" x2="${x}" y2="${BOUNDS.h}" class="gl${x%100?'':' m'}"/>`;
+  for(let y=0;y<=BOUNDS.h;y+=50)s+=`<line x1="0" y1="${y}" x2="${BOUNDS.w}" y2="${y}" class="gl${y%100?'':' m'}"/>`;return s+'</g>'}
+function labelsSVG(){return ROOMS.map(r=>`<text x="${r.lab[0]}" y="${r.lab[1]}" class="rl">${r.name}</text><text x="${r.lab[0]}" y="${r.lab[1]}" dy="1.25em" class="rl2">${r.area}</text>`).join('')}
+function dimsSVG(){if(!S.settings.dims)return'';let s='';
+  ROOMS.forEach(r=>r.pts.forEach((p,i)=>{const q=r.pts[(i+1)%r.pts.length];const len=Math.hypot(q[0]-p[0],q[1]-p[1]);if(len<40)return;
+    const mx=(p[0]+q[0])/2,my=(p[1]+q[1])/2,nx=-(q[1]-p[1])/len,ny=(q[0]-p[0])/len;let k=inPoly(mx+nx*5,my+ny*5,r.pts)?1:-1;
+    const x=mx+nx*k*13,y=my+ny*k*13,vert=Math.abs(q[0]-p[0])<1;
+    s+=`<text x="${f(x)}" y="${f(y)}" class="wd"${vert?` transform="rotate(-90 ${f(x)} ${f(y)})"`:''}>${(len/100).toFixed(2).replace('.',',')}</text>`}));return s}
+function itemSVG(it,forPreview){
+  const fn=DRAW[it.t]||DRAW.rect, sx=it.fl?-1:1;
+  const hp=Math.max(0,(26-it.d)/2), wp=Math.max(0,(26-it.w)/2);
+  const hit=forPreview?'':`<rect x="${f(-it.w/2-wp)}" y="${f(-it.d/2-hp)}" width="${f(it.w+2*wp)}" height="${f(it.d+2*hp)}" class="hit"/>`;
+  return `<g class="it" data-id="${it.id}" style="--fill:var(${CATCOLOR[it.c]||'--c-other'})" transform="translate(${f(it.x)} ${f(it.y)}) rotate(${f(it.rot)}) scale(${sx} 1)">${fn(it.w,it.d)}${hit}</g>`}
+function aabb(it){const a=it.rot*Math.PI/180,c=Math.abs(Math.cos(a)),s=Math.abs(Math.sin(a));const hw=(it.w*c+it.d*s)/2,hd=(it.w*s+it.d*c)/2;return{x0:it.x-hw,x1:it.x+hw,y0:it.y-hd,y1:it.y+hd}}
+function renderItems(){
+  const items=[...V().items].sort((a,b)=>(a.z??1)-(b.z??1));
+  let s=items.map(i=>itemSVG(i)).join('');
+  if(S.settings.labels)items.forEach(i=>{if(i.t==='door'||i.t==='wall'||i.t==='tv'||i.c==='rug')return;
+    const b=aabb(i),sw=(b.x1-b.x0)*view.s,sh=(b.y1-b.y0)*view.s,cw=6.2;if(sh<15)return;
+    let nm=i.n.replace(/\s*\d+[×x]\d+$/,'').replace(/\s+\d+$/,'');if(nm.length*cw>sw-6)nm=nm.split(/[\s\/-]/)[0];if(nm.length*cw>sw-6)return;
+    s+=`<text x="${f(i.x)}" y="${f(i.y)}" class="il">${esc(nm)}</text>`});
+  $('Litems').innerHTML=s;renderOver()}
+function esc(t){return String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[c])}
+function ray(px,py,dir){let best=Infinity;
+  for(const[x1,y1,x2,y2]of EDGES){
+    if(dir==='R'||dir==='L'){if(Math.abs(x1-x2)>.5)continue;if(py<Math.min(y1,y2)-.01||py>Math.max(y1,y2)+.01)continue;const d=dir==='R'?x1-px:px-x1;if(d>=-1&&d<best)best=d}
+    else{if(Math.abs(y1-y2)>.5)continue;if(px<Math.min(x1,x2)-.01||px>Math.max(x1,x2)+.01)continue;const d=dir==='D'?y1-py:py-y1;if(d>=-1&&d<best)best=d}}
+  return best}
+function renderOver(){
+  let s='';const it=sel&&getItem(sel);
+  if(it){const pad=4;s+=`<g transform="translate(${f(it.x)} ${f(it.y)}) rotate(${f(it.rot)})"><rect x="${f(-it.w/2-pad)}" y="${f(-it.d/2-pad)}" width="${f(it.w+2*pad)}" height="${f(it.d+2*pad)}" class="selbox"/></g>`;
+    if(it.t!=='door'){const b=aabb(it),cx=(b.x0+b.x1)/2,cy=(b.y0+b.y1)/2;
+      [['L',b.x0,cy],['R',b.x1,cy],['U',cx,b.y0],['D',cx,b.y1]].forEach(([d,x,y])=>{const dist=ray(x,y,d);if(!isFinite(dist)||dist>700||dist<0.5)return;
+        let x2=x,y2=y;if(d==='L')x2=x-dist;if(d==='R')x2=x+dist;if(d==='U')y2=y-dist;if(d==='D')y2=y+dist;
+        const tk=5/view.s;s+=`<line x1="${f(x)}" y1="${f(y)}" x2="${f(x2)}" y2="${f(y2)}" class="dline"/>`;
+        s+=(d==='L'||d==='R')?`<line x1="${f(x2)}" y1="${f(y-tk)}" x2="${f(x2)}" y2="${f(y+tk)}" class="dline"/>`:`<line x1="${f(x-tk)}" y1="${f(y2)}" x2="${f(x+tk)}" y2="${f(y2)}" class="dline"/>`;
+        const tx=(x+x2)/2,ty=(y+y2)/2;s+=`<text x="${f(tx)}" y="${f(ty)}" class="dtxt"${(d==='U'||d==='D')?` transform="rotate(-90 ${f(tx)} ${f(ty)})"`:''}>${Math.round(dist)}</text>`})}}
+  if(ruler){const{x1,y1,x2,y2}=ruler,len=Math.hypot(x2-x1,y2-y1),tk=6/view.s;
+    s+=`<line x1="${f(x1)}" y1="${f(y1)}" x2="${f(x2)}" y2="${f(y2)}" class="ruler"/>`+C(x1,y1,tk*.7,'ink')+C(x2,y2,tk*.7,'ink');
+    if(len>1){let a=Math.atan2(y2-y1,x2-x1)*180/Math.PI;if(a>90)a-=180;if(a<-90)a+=180;const mx=(x1+x2)/2,my=(y1+y2)/2;
+      s+=`<text x="${f(mx)}" y="${f(my)}" dy="${f(-12/view.s)}" class="rtxt" transform="rotate(${f(a)} ${f(mx)} ${f(my)})">${Math.round(len)} см</text>`}}
+  $('Lover').innerHTML=s}
+function renderStatic(){$('Lstatic').innerHTML=staticSVG();$('Lgrid').innerHTML=gridSVG();$('Llabels').innerHTML=labelsSVG();$('Ldims').innerHTML=dimsSVG();
+  svg.querySelector('#roomsClip').innerHTML=ROOMS.map(r=>`<polygon points="${pts(r.pts)}"/>`).join('')}
+let lastS=0,relT;
+function applyView(){world.setAttribute('transform',`translate(${f(view.tx)} ${f(view.ty)}) scale(${view.s})`);world.style.setProperty('--fs',(12/view.s)+'px');
+  if(view.s!==lastS){lastS=view.s;clearTimeout(relT);relT=setTimeout(()=>{if(mode!=='drag')renderItems()},140)}}
+let userMoved=false;
+function renderAll(){$('vname').textContent=V().name;renderStatic();renderItems();renderFoot();updUndo()}
+function fit(){const r=svg.getBoundingClientRect();if(!r.width)return;const m=14;const s=Math.min((r.width-2*m)/BOUNDS.w,(r.height-2*m)/BOUNDS.h);
+  view.s=s;view.tx=(r.width-BOUNDS.w*s)/2-BOUNDS.x*s;view.ty=(r.height-BOUNDS.h*s)/2-BOUNDS.y*s;applyView();renderOver()}
+function zoomAt(k,cx,cy){const r=svg.getBoundingClientRect();if(cx==null){cx=r.width/2;cy=r.height/2}
+  const ns=Math.min(10,Math.max(.12,view.s*k));const wx=(cx-view.tx)/view.s,wy=(cy-view.ty)/view.s;view.s=ns;view.tx=cx-wx*ns;view.ty=cy-wy*ns;applyView();renderOver()}
+
+/* ============ Нижняя панель ============ */
+const IC={
+ plus:'<path d="M12 5v14M5 12h14"/>',ruler:'<path d="M3 17 17 3l4 4L7 21z"/><path d="m7 13 2 2m1-5 2 2m1-5 2 2"/>',fit:'<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>',
+ rl:'<path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/>',rr:'<path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/>',
+ flip:'<path d="M12 3v18"/><path d="M8 7 3 12l5 5V7zM16 7l5 5-5 5V7z"/>',copy:'<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3"/>',
+ trash:'<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/>',x:'<path d="M6 6l12 12M18 6 6 18"/>',up:'<path d="m6 15 6-6 6 6"/>',down:'<path d="m6 9 6 6 6-6"/>',
+ left:'<path d="m15 6-6 6 6 6"/>',right:'<path d="m9 6 6 6-6 6"/>',dots:'<circle cx="5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="19" cy="12" r="1.3"/>'};
+const ic=k=>`<svg viewBox="0 0 24 24">${IC[k]}</svg>`;
+function renderFoot(){
+  const it=sel&&getItem(sel),F=$('foot');
+  $('hint').hidden=!!it&&!rulerMode;
+  if(rulerMode){$('hint').hidden=false;$('hint').textContent='Проведи пальцем, чтобы измерить расстояние'}
+  else $('hint').textContent='Нажми на предмет, чтобы выбрать и двигать';
+  if(!it){F.innerHTML=`<div class="row">
+     <button class="btn ${rulerMode?'on':''}" id="bRuler" aria-pressed="${rulerMode}">${ic('ruler')}Линейка</button>
+     <button class="btn primary" id="bAdd">${ic('plus')}Добавить мебель</button>
+     <button class="btn" id="bFit" aria-label="Показать весь план">${ic('fit')}</button></div>`;
+    $('bAdd').onclick=openCatalog;$('bFit').onclick=fit;
+    $('bRuler').onclick=()=>{rulerMode=!rulerMode;if(!rulerMode)ruler=null;renderOver();renderFoot()};return}
+  F.innerHTML=`<div class="selhead">
+      <input id="iName" value="${esc(it.n)}" aria-label="Название" autocomplete="off">
+      <button class="ib" id="bDone" aria-label="Снять выделение">${ic('x')}</button></div>
+    <div class="dims">
+      <div class="stepper"><span>Ш</span><button data-k="w" data-v="-5" aria-label="Уже">−</button><input id="iW" type="number" inputmode="numeric" value="${Math.round(it.w)}" aria-label="Ширина, см"><button data-k="w" data-v="5" aria-label="Шире">+</button></div>
+      <div class="stepper"><span>Г</span><button data-k="d" data-v="-5" aria-label="Меньше глубина">−</button><input id="iD" type="number" inputmode="numeric" value="${Math.round(it.d)}" aria-label="Глубина, см"><button data-k="d" data-v="5" aria-label="Больше глубина">+</button></div>
+    </div>
+    <div class="tools">
+      <button class="btn" id="bRL">${ic('rl')}90° влево</button>
+      <button class="btn" id="bRR">${ic('rr')}90° вправо</button>
+      <button class="btn" id="bFlip">${ic('flip')}Отразить</button>
+      <button class="btn" id="bCopy">${ic('copy')}Копия</button>
+      <button class="btn danger" id="bDel">${ic('trash')}Удалить</button>
+    </div>
+    ${moreOpen?`<div class="more">
+      <div class="stepper" style="max-width:190px"><span>Угол</span><input id="iA" type="number" inputmode="numeric" value="${Math.round(it.rot)}" aria-label="Угол поворота, градусы"><span style="padding-right:10px">°</span></div>
+      <div class="pad"><button class="btn" data-n="-1,0" aria-label="Влево на 1 см">${ic('left')}</button><button class="btn" data-n="0,-1" aria-label="Вверх на 1 см">${ic('up')}</button><button class="btn" data-n="0,1" aria-label="Вниз на 1 см">${ic('down')}</button><button class="btn" data-n="1,0" aria-label="Вправо на 1 см">${ic('right')}</button></div>
+    </div>`:''}
+    <button class="btn sm" id="bMore" style="width:100%;margin-top:6px;height:30px;border:0;color:var(--muted)">${moreOpen?'Скрыть точную настройку':'Точная настройка: угол и сдвиг по 1 см'}</button>`;
+  const upd=(fn)=>{const b=snap();fn(it);pushHist(b);changed();renderItems()};
+  $('bDone').onclick=()=>{sel=null;renderOver();renderFoot()};
+  $('iName').onchange=e=>upd(i=>i.n=e.target.value.trim()||i.n);
+  const setDim=(k,val)=>{val=Math.max(1,Math.min(1200,Math.round(+val||0)));if(val===Math.round(it[k]))return;upd(i=>i[k]=val);$('i'+k.toUpperCase()).value=val};
+  $('iW').onchange=e=>setDim('w',e.target.value);$('iD').onchange=e=>setDim('d',e.target.value);
+  F.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>setDim(b.dataset.k,it[b.dataset.k]+ +b.dataset.v));
+  $('bRL').onclick=()=>upd(i=>i.rot=((i.rot-90)%360+360)%360);
+  $('bRR').onclick=()=>upd(i=>i.rot=(i.rot+90)%360);
+  $('bFlip').onclick=()=>upd(i=>i.fl=i.fl?0:1);
+  $('bCopy').onclick=()=>{const b=snap();const c=JSON.parse(JSON.stringify(it));c.id=uid();c.x+=20;c.y+=20;V().items.push(c);sel=c.id;pushHist(b);changed();renderItems();renderFoot()};
+  $('bDel').onclick=()=>{const b=snap();V().items=V().items.filter(i=>i.id!==it.id);sel=null;pushHist(b);changed();renderItems();renderFoot();toast('Удалено. Вернуть можно кнопкой «Отменить»')};
+  $('bMore').onclick=()=>{moreOpen=!moreOpen;renderFoot()};
+  if(moreOpen){$('iA').onchange=e=>upd(i=>i.rot=((Math.round(+e.target.value||0))%360+360)%360);
+    F.querySelectorAll('[data-n]').forEach(b=>b.onclick=()=>{const[dx,dy]=b.dataset.n.split(',').map(Number);upd(i=>{i.x+=dx;i.y+=dy})})}
+}
+
+/* ============ Жесты: перетаскивание, панорама, масштаб ============ */
+const ptrs=new Map();let mode=null,drag=null,pinch=null,pan=null,tapStart=null;
+function local(e){const r=svg.getBoundingClientRect();return{x:e.clientX-r.left,y:e.clientY-r.top}}
+function toWorld(p){return{x:(p.x-view.tx)/view.s,y:(p.y-view.ty)/view.s}}
+function magnet(it){if(!S.settings.magnet||it.rot%90!==0)return;const b=aabb(it),cx=it.x,cy=it.y,th=Math.max(4,8/view.s);
+  const l=ray(b.x0,cy,'L'),r=ray(b.x1,cy,'R'),u=ray(cx,b.y0,'U'),d=ray(cx,b.y1,'D');
+  if(l<th&&l<=r)it.x-=l;else if(r<th)it.x+=r;
+  if(u<th&&u<=d)it.y-=u;else if(d<th)it.y+=d}
+svg.addEventListener('pointerdown',e=>{
+  try{svg.setPointerCapture(e.pointerId)}catch(_){}const p=local(e);ptrs.set(e.pointerId,p);
+  if(ptrs.size===2){ // начало щипка
+    if(drag&&drag.moved){const it=getItem(drag.id);if(it){it.x=drag.ox;it.y=drag.oy}renderItems()}
+    drag=null;ruler&&rulerMode&&mode==='ruler'&&(ruler=null);
+    const[a,b]=[...ptrs.values()];pinch={d:Math.hypot(a.x-b.x,a.y-b.y)||1,mx:(a.x+b.x)/2,my:(a.y+b.y)/2,s:view.s,tx:view.tx,ty:view.ty};mode='pinch';return}
+  if(ptrs.size>2)return;
+  const w=toWorld(p);tapStart={x:p.x,y:p.y,t:Date.now()};
+  if(rulerMode){const st=1;ruler={x1:Math.round(w.x/st)*st,y1:Math.round(w.y/st)*st,x2:Math.round(w.x),y2:Math.round(w.y)};mode='ruler';renderOver();return}
+  const g=e.target.closest&&e.target.closest('[data-id]');
+  if(g){const it=getItem(g.dataset.id);if(it){if(sel!==it.id){sel=it.id;moreOpen=false;renderFoot()}
+    drag={id:it.id,sx:w.x,sy:w.y,ox:it.x,oy:it.y,moved:false,before:snap(),p0:p};mode='drag';renderOver();return}}
+  pan={x:p.x,y:p.y,tx:view.tx,ty:view.ty};mode='pan'});
+svg.addEventListener('pointermove',e=>{
+  if(!ptrs.has(e.pointerId))return;const p=local(e);ptrs.set(e.pointerId,p);
+  if(mode==='pinch'&&ptrs.size>=2){const[a,b]=[...ptrs.values()];const d=Math.hypot(a.x-b.x,a.y-b.y)||1,mx=(a.x+b.x)/2,my=(a.y+b.y)/2;
+    const ns=Math.min(10,Math.max(.12,pinch.s*d/pinch.d));const wx=(pinch.mx-pinch.tx)/pinch.s,wy=(pinch.my-pinch.ty)/pinch.s;
+    view.s=ns;view.tx=mx-wx*ns;view.ty=my-wy*ns;applyView();renderOver();return}
+  if(mode==='pan'){view.tx=pan.tx+(p.x-pan.x);view.ty=pan.ty+(p.y-pan.y);applyView();return}
+  if(mode==='ruler'){const w=toWorld(p);ruler.x2=Math.round(w.x);ruler.y2=Math.round(w.y);renderOver();return}
+  if(mode==='drag'&&drag){if(!drag.moved&&Math.hypot(p.x-drag.p0.x,p.y-drag.p0.y)<4)return;drag.moved=true;
+    const it=getItem(drag.id);if(!it)return;const w=toWorld(p),st=S.settings.step||1;
+    it.x=Math.round((drag.ox+w.x-drag.sx)/st)*st;it.y=Math.round((drag.oy+w.y-drag.sy)/st)*st;magnet(it);
+    const g=$('Litems').querySelector(`[data-id="${it.id}"]`);if(g)g.setAttribute('transform',`translate(${f(it.x)} ${f(it.y)}) rotate(${f(it.rot)}) scale(${it.fl?-1:1} 1)`);
+    renderOver()}});
+function endPtr(e){if(!ptrs.has(e.pointerId))return;ptrs.delete(e.pointerId);const p=local(e);
+  if(mode==='pinch'){if(ptrs.size===1){const[q]=[...ptrs.values()];pan={x:q.x,y:q.y,tx:view.tx,ty:view.ty};mode='pan'}else if(!ptrs.size)mode=null;return}
+  if(ptrs.size)return;
+  if(mode==='drag'&&drag){if(drag.moved){pushHist(drag.before);changed();renderItems()}drag=null}
+  else if(mode==='pan'&&tapStart&&Math.hypot(p.x-tapStart.x,p.y-tapStart.y)<6&&Date.now()-tapStart.t<500){if(sel){sel=null;renderOver();renderFoot()}}
+  mode=null}
+svg.addEventListener('pointerup',endPtr);svg.addEventListener('pointercancel',endPtr);
+svg.addEventListener('wheel',e=>{e.preventDefault();const p=local(e);zoomAt(Math.exp(-e.deltaY*0.0015),p.x,p.y)},{passive:false});
+$('zin').onclick=()=>zoomAt(1.35);$('zout').onclick=()=>zoomAt(1/1.35);
+$('undo').onclick=undo;$('redo').onclick=redoF;
+document.addEventListener('keydown',e=>{if(e.target.matches('input'))return;const it=sel&&getItem(sel);
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();e.shiftKey?redoF():undo();return}
+  if(!it)return;const st=e.shiftKey?10:1,mv={ArrowLeft:[-st,0],ArrowRight:[st,0],ArrowUp:[0,-st],ArrowDown:[0,st]}[e.key];
+  if(mv){e.preventDefault();const b=snap();it.x+=mv[0];it.y+=mv[1];pushHist(b);changed();renderItems()}
+  if(e.key==='Delete'||e.key==='Backspace'){const b=snap();V().items=V().items.filter(i=>i.id!==it.id);sel=null;pushHist(b);changed();renderItems();renderFoot()}
+  if(e.key==='r'||e.key==='к'){const b=snap();it.rot=(it.rot+90)%360;pushHist(b);changed();renderItems()}});
+
+/* ============ Листы: каталог и меню ============ */
+const layer=$('layer');let catIdx=0;
+function closeSheet(){layer.innerHTML=''}
+function sheet(title,body){layer.innerHTML=`<div class="scrim" id="scrim"></div><div class="sheet" role="dialog" aria-label="${esc(title)}"><div class="grab"></div>
+  <div class="sh band"><h2>${esc(title)}</h2><button class="ib" id="shX" aria-label="Закрыть">${ic('x')}</button></div><div class="body band" id="shB">${body}</div></div>`;
+  $('scrim').onclick=closeSheet;$('shX').onclick=closeSheet}
+function preview(t,w,d,c){const pad=6,sc=Math.max(w,d)+pad*2;const it={id:'p',t,w,d,c,x:0,y:0,rot:0,fl:0};
+  return `<svg viewBox="${f(-sc/2)} ${f(-sc/2)} ${f(sc)} ${f(sc)}" aria-hidden="true" style="--fs:10px">${itemSVG(it,true)}</svg>`}
+function openCatalog(){
+  const chips=CAT.map((c,i)=>`<button class="chip ${i===catIdx?'on':''}" data-c="${i}">${c.cat}</button>`).join('');
+  const cells=CAT[catIdx].items.map((a,j)=>`<button class="cell" data-j="${j}">${preview(a[0],a[2],a[3],a[4])}<b>${a[1]}</b><small>${a[2]}×${a[3]}</small></button>`).join('');
+  sheet('Добавить мебель',`<div class="chips">${chips}</div><div class="grid">${cells}</div>
+    <p class="note" style="margin-top:14px">Предмет появится в центре экрана. Размеры потом меняются внизу: Ш — ширина, Г — глубина, в сантиметрах. Спинка или задняя стенка у предмета — верхний край на картинке.</p>`);
+  layer.querySelectorAll('.chip').forEach(b=>b.onclick=()=>{catIdx=+b.dataset.c;openCatalog()});
+  layer.querySelectorAll('.cell').forEach(b=>b.onclick=()=>{const a=CAT[catIdx].items[+b.dataset.j];const r=svg.getBoundingClientRect();
+    const w=toWorld({x:r.width/2,y:r.height/2});const it=mk(a[0],a[1],a[2],a[3],a[4],a[5],Math.round(w.x),Math.round(w.y));
+    const bf=snap();V().items.push(it);sel=it.id;moreOpen=false;rulerMode=false;ruler=null;pushHist(bf);changed();renderItems();closeSheet();renderFoot()})}
+let renaming=false,confirmDel=false;
+function openMenu(){
+  const vs=S.variants.map(v=>`<button class="vitem ${v.id===S.current?'on':''}" data-v="${v.id}"><span>${esc(v.name)}</span><small>${v.items.filter(i=>i.t!=='door').length} предм.</small></button>`).join('');
+  const st=S.settings,tg=(k,t,d)=>`<label class="tog"><span><b style="font-weight:600">${t}</b>${d?`<br><small style="color:var(--muted)">${d}</small>`:''}</span><span class="sw"><input type="checkbox" id="t_${k}" ${st[k]?'checked':''}><i></i></span></label>`;
+  sheet('Варианты и настройки',`
+    <div class="sect">Варианты планировки</div><div class="list">${vs}</div>
+    <div class="wrapbtns" style="margin-top:10px">
+      <button class="btn sm" id="vNew">${ic('plus')}Новый пустой</button>
+      <button class="btn sm" id="vDup">${ic('copy')}Копия текущего</button>
+      <button class="btn sm" id="vRen">Переименовать</button>
+      <button class="btn sm danger" id="vDel">${ic('trash')}Удалить</button>
+    </div>
+    ${renaming?`<div class="confirm"><input id="vName" value="${esc(V().name)}" style="flex:1;min-width:0;height:40px;border:1px solid var(--line);border-radius:10px;padding:0 10px;font-size:16px;background:var(--panel)"><button class="btn sm on" id="vRenOk">Сохранить</button></div>`:''}
+    ${confirmDel?`<div class="confirm"><span style="flex:1;min-width:0">${S.variants.length>1?`Удалить «${esc(V().name)}»? Вернуть не получится.`:'Это единственный вариант. Очистить его от мебели (двери останутся)?'}</span><button class="btn sm" id="vDelNo">Нет</button><button class="btn sm danger" id="vDelOk">${S.variants.length>1?'Удалить':'Очистить'}</button></div>`:''}
+    <div class="sect">Показывать</div>
+    ${tg('dims','Размеры стен','Длины по плану, в метрах')}${tg('grid','Сетка','Тонкая линия — 50 см, жирная — 1 м')}${tg('labels','Названия мебели')}${tg('magnet','Магнит к стенам','Предмет прилипает к стене, когда подвигаешь его близко')}
+    <div class="tog"><span><b style="font-weight:600">Шаг перемещения</b></span><span class="seg">${[1,5,10].map(n=>`<button data-st="${n}" class="${st.step===n?'on':''}">${n} см</button>`).join('')}</span></div>
+    <div class="sect">Файлы</div>
+    <div class="wrapbtns">
+      <button class="btn sm" id="bPng">Сохранить картинкой (PNG)</button>
+      <button class="btn sm" id="bJson">Скачать план (.json)</button>
+      <label class="btn sm" for="fJson" style="cursor:pointer">Загрузить план из файла</label>
+      <input type="file" id="fJson" accept=".json,application/json" hidden>
+    </div>
+    <p class="note" style="margin-top:8px">${inClaude()?'Файл плана нужен, чтобы сделать резервную копию или перенести варианты в другую копию редактора.':'В этой версии план хранится только в этом браузере. Чтобы перенести его на другое устройство или не потерять, скачай файл плана и загрузи его там.'} Загруженные варианты добавятся к текущим, ничего не сотрётся.</p>
+    <div class="sect">О плане</div>
+    <p class="note">Перерисовано по плану БТИ, квартира №33 на 6 этаже. Высота потолка 2,74 м. Комнаты 17,4 и 19,8 м², санузел 4,4 м², прихожая 6,8 м². Размеры комнат совпадают с планом до 1–2 см. Толщину стен и размеры лоджии я оценил по чертежу, поэтому их стоит перемерить рулеткой. Двери на плане БТИ не нарисованы: я поставил их туда, где они вероятнее всего. Их можно двигать как обычные предметы.</p>
+    <p class="note">Как пользоваться: один палец двигает план или предмет, двумя пальцами план приближается. Выбранный предмет показывает расстояние до стен в сантиметрах.</p>`);
+  layer.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{S.current=b.dataset.v;sel=null;hist=[];redo=[];renaming=confirmDel=false;changed();renderAll();closeSheet()});
+  $('vNew').onclick=()=>{const v={id:uid(),name:'Вариант '+(S.variants.length+1),items:DOORS()};S.variants.push(v);S.current=v.id;sel=null;hist=[];redo=[];changed();renderAll();closeSheet();toast('Создан пустой вариант')};
+  $('vDup').onclick=()=>{const c=JSON.parse(JSON.stringify(V()));c.id=uid();c.name=V().name+' (копия)';c.items.forEach(i=>i.id=uid());S.variants.push(c);S.current=c.id;sel=null;hist=[];redo=[];changed();renderAll();closeSheet();toast('Копия создана')};
+  $('vRen').onclick=()=>{renaming=!renaming;confirmDel=false;openMenu();if(renaming){const i=$('vName');i.focus();i.select()}};
+  $('vDel').onclick=()=>{confirmDel=!confirmDel;renaming=false;openMenu()};
+  if(renaming)$('vRenOk').onclick=()=>{const n=$('vName').value.trim();if(n){V().name=n;changed();$('vname').textContent=n}renaming=false;openMenu()};
+  if(confirmDel){$('vDelNo').onclick=()=>{confirmDel=false;openMenu()};
+    $('vDelOk').onclick=()=>{if(S.variants.length>1){S.variants=S.variants.filter(v=>v.id!==S.current);S.current=S.variants[0].id;hist=[];redo=[]}
+      else{const b=snap();V().items=V().items.filter(i=>i.t==='door');pushHist(b)}sel=null;confirmDel=false;changed();renderAll();openMenu()}}
+  ['dims','grid','labels','magnet'].forEach(k=>$('t_'+k).onchange=e=>{S.settings[k]=e.target.checked;changed();renderStatic();renderItems()});
+  layer.querySelectorAll('[data-st]').forEach(b=>b.onclick=()=>{S.settings.step=+b.dataset.st;changed();openMenu()});
+  $('bPng').onclick=exportPng;$('bJson').onclick=exportJson;
+  $('fJson').onchange=e=>{const fl=e.target.files&&e.target.files[0];if(fl)importJson(fl);e.target.value=''}}
+$('menu').onclick=()=>{renaming=confirmDel=false;openMenu()};$('vbtn').onclick=()=>{renaming=confirmDel=false;openMenu()};
+
+/* ============ Экспорт PNG ============ */
+async function saveFile(filename,blob){
+  if(inClaude()){let dl=null;try{dl=await window.claude.use('downloads')}catch(e){}
+    if(!dl){toast('Сохранение файлов здесь недоступно');return false}
+    try{await dl.save({filename,data:blob});return true}catch(e){if(e&&e.code!=='declined')toast('Не получилось сохранить файл');return false}}
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=filename;document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},4000);return true}
+const safeName=n=>String(n).replace(/[^\wа-яё -]/gi,'').trim()||'план';
+async function exportJson(){const ok=await saveFile('планировка-кв33.json',new Blob([JSON.stringify({app:'kv33-plan',version:1,variants:S.variants},null,1)],{type:'application/json'}));if(ok)toast('Файл плана сохранён')}
+function importJson(file){const r=new FileReader();r.onload=()=>{try{const o=JSON.parse(r.result);const vs=(o&&o.variants)||[];
+    const good=vs.filter(v=>v&&typeof v.name==='string'&&Array.isArray(v.items));if(!good.length)throw 0;
+    good.forEach(v=>{const c=JSON.parse(JSON.stringify(v));c.id=uid();c.items=c.items.filter(i=>i&&DRAW[i.t]&&isFinite(i.x)&&isFinite(i.y)&&i.w>0&&i.d>0).map(i=>Object.assign(i,{id:uid()}));
+      if(S.variants.some(x=>x.name===c.name))c.name+=' (из файла)';S.variants.push(c)});
+    S.current=S.variants[S.variants.length-1].id;sel=null;hist=[];redo=[];changed();renderAll();closeSheet();toast('Загружено вариантов: '+good.length)}
+  catch(e){toast('Это не файл плана. Нужен .json, скачанный отсюда же')}};r.readAsText(file)}
+async function exportPng(){
+  const cs=getComputedStyle(document.documentElement);const vars=['--wall','--floor','--floor-wet','--grid','--glass','--ink','--dim','--sel','--accent',...Object.values(CATCOLOR)].map(k=>`${k}:${cs.getPropertyValue(k).trim()}`).join(';');
+  const W=1600,sc=W/BOUNDS.w,H=Math.round(BOUNDS.h*sc);
+  const fs=13/sc*1.6;
+  const body=`<rect x="${BOUNDS.x}" y="${BOUNDS.y}" width="${BOUNDS.w}" height="${BOUNDS.h}" fill="${cs.getPropertyValue('--bg').trim()}"/>${$('Lstatic').innerHTML}${$('Lgrid').innerHTML}${$('Llabels').innerHTML}${$('Litems').innerHTML}${$('Ldims').innerHTML}
+    <text x="${BOUNDS.x+12}" y="${BOUNDS.y+BOUNDS.h-14}" class="rl2" style="text-anchor:start;fill-opacity:.7">${esc(V().name)} · кв. №33 · сетка 1 м</text>`;
+  const s=`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="${BOUNDS.x} ${BOUNDS.y} ${BOUNDS.w} ${BOUNDS.h}"><defs><clipPath id="roomsClip">${ROOMS.map(r=>`<polygon points="${pts(r.pts)}"/>`).join('')}</clipPath><pattern id="tile" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="var(--grid)" stroke-opacity=".10" stroke-width=".8"/></pattern></defs><style>svg{${vars};--font:system-ui,sans-serif;--mono:ui-monospace,Menlo,monospace;--fs:${f(fs)}px}${SVG_CSS}.hit{fill:none}</style>${body}</svg>`;
+  const url=URL.createObjectURL(new Blob([s],{type:'image/svg+xml'}));const img=new Image();
+  img.onload=async()=>{const c=document.createElement('canvas');c.width=W;c.height=H;c.getContext('2d').drawImage(img,0,0,W,H);URL.revokeObjectURL(url);
+    c.toBlob(async b=>{if(!b){toast('Не получилось собрать картинку');return}if(await saveFile('планировка-'+safeName(V().name)+'.png',b))toast('Картинка сохранена')},'image/png')};
+  img.onerror=()=>toast('Не получилось собрать картинку');img.src=url}
+
+let toastT;function toast(t){let el=document.querySelector('.toast');if(!el){el=document.createElement('div');el.className='toast';el.setAttribute('role','status');document.body.appendChild(el)}
+  el.textContent=t;el.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>el.hidden=true,2600)}
+
+/* ============ Старт ============ */
+renderAll();
+requestAnimationFrame(fit);
+new ResizeObserver(()=>{if(!userMoved)fit()}).observe(svg);
+['pointerdown','wheel'].forEach(ev=>svg.addEventListener(ev,()=>{userMoved=true},{passive:true}));
+$('zin').addEventListener('click',()=>userMoved=true);$('zout').addEventListener('click',()=>userMoved=true);
+</script>
+</body>
+</html>
